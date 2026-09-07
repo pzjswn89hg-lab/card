@@ -1,430 +1,796 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Don't Leave Me On Read — reminder card maker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-  :root{
-    --ink:#211A2B;
-    --paper:#FFFDF8;
-    --pink:#FBD3E9;
-    --pink-deep:#F6A6CE;
-    --yellow:#FFE68A;
-    --mint:#BFEEDD;
-    --lav:#E1D3F7;
-    --accent:#FF6FA5;
-    --card-bg:#FFFDF8;
-    --box-bg:var(--yellow);
-    --radius-card:28px;
-    --radius-ctrl:12px;
-    --shadow-off:6px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Quest — will you go out with me?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@500;600;700&family=VT323&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-a: #FFD3E4;
+      --bg-b: #FFB6D0;
+      --bezel: #E8407C;
+      --bezel-dark: #B32B5D;
+      --cream: #FFF6EE;
+      --screen: #241233;
+      --ink: #3B1F2B;
+      --yes: #FF3E7F;
+      --yes-dark: #C21F5B;
+      --no: #FFC2D9;
+      --no-dark: #E88BAF;
+      --gold: #FFD23F;
+    }
 
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:'Karla', sans-serif;
-    color:var(--ink);
-    background:
-      radial-gradient(circle at 12% 8%, #fff3fa 0%, transparent 45%),
-      linear-gradient(160deg, var(--pink) 0%, var(--lav) 100%);
-    min-height:100vh;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  h1,h2,h3,.display{
-    font-family:'Fredoka', sans-serif;
-  }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-  a{color:inherit;}
+    body {
+      font-family: 'VT323', monospace;
+      font-size: 19px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, #fff 0%, transparent 40%),
+        linear-gradient(160deg, var(--bg-a) 0%, var(--bg-b) 100%);
+      min-height: 100vh;
+    }
 
-  /* ---------- layout shell ---------- */
-  .wrap{
-    max-width:1180px;
-    margin:0 auto;
-    padding:40px 24px 80px;
-  }
+    .pixel {
+      font-family: 'Press Start 2P', monospace;
+    }
 
-  header.page-head{
-    max-width:640px;
-    margin:0 auto 44px;
-    text-align:center;
-  }
-  header.page-head h1{
-    font-size:clamp(28px, 4vw, 42px);
-    font-weight:700;
-    line-height:1.15;
-    margin:0 0 12px;
-  }
-  header.page-head p{
-    margin:0;
-    font-size:16px;
-    line-height:1.6;
-    color:#4a3f57;
-  }
+    .fancy {
+      font-family: 'Fredoka', sans-serif;
+    }
 
-  .builder{
-    display:grid;
-    grid-template-columns:minmax(280px, 380px) 1fr;
-    gap:32px;
-    align-items:start;
-  }
-  @media (max-width: 860px){
-    .builder{grid-template-columns:1fr;}
-  }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 22px 80px;
+    }
 
-  /* ---------- form panel ---------- */
-  .panel{
-    background:var(--paper);
-    border:3px solid var(--ink);
-    border-radius:20px;
-    padding:26px 24px 28px;
-    box-shadow:var(--shadow-off) var(--shadow-off) 0 var(--ink);
-  }
-  @media (max-width: 860px){ .panel{order:2;} }
+    header.page-head {
+      max-width: 600px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
 
-  .field{margin-bottom:20px;}
-  .field:last-of-type{margin-bottom:0;}
-  .field label{
-    display:block;
-    font-weight:700;
-    font-size:13px;
-    letter-spacing:.2px;
-    margin-bottom:7px;
-  }
-  .field .hint{
-    display:block;
-    font-weight:400;
-    font-size:12px;
-    color:#7a6d86;
-    margin-top:4px;
-  }
+    header.page-head h1 {
+      font-size: clamp(18px, 3vw, 26px);
+      line-height: 1.5;
+      margin: 0 0 14px;
+      color: var(--bezel-dark);
+    }
 
-  input[type=text],
-  input[type=date],
-  input[type=time],
-  textarea,
-  select{
-    width:100%;
-    font-family:'Karla', sans-serif;
-    font-size:15px;
-    padding:10px 12px;
-    border:2.5px solid var(--ink);
-    border-radius:var(--radius-ctrl);
-    background:#fff;
-    color:var(--ink);
-    outline-offset:2px;
-  }
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible{
-    outline:3px solid var(--accent);
-  }
-  textarea{resize:vertical; min-height:64px; line-height:1.4;}
+    header.page-head p {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #6b4358;
+    }
 
-  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    input[type=date],
+    input[type=time] {
+      width: 100%;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      padding: 9px 11px;
+      border: 2.5px solid var(--ink);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline-offset: 2px;
+    }
 
-  .swatches{display:flex; gap:10px; flex-wrap:wrap;}
-  .swatch{
-    width:38px; height:38px;
-    border-radius:50%;
-    border:2.5px solid var(--ink);
-    cursor:pointer;
-    padding:0;
-    position:relative;
-  }
-  .swatch[data-theme=bubblegum]{background:linear-gradient(135deg,#FFE68A,#F6A6CE);}
-  .swatch[data-theme=mint]{background:linear-gradient(135deg,#BFEEDD,#8FD3C7);}
-  .swatch[data-theme=lavender]{background:linear-gradient(135deg,#E1D3F7,#C9B6F2);}
-  .swatch[data-theme=peach]{background:linear-gradient(135deg,#FFD9B3,#FFB6A3);}
-  .swatch.active::after{
-    content:"";
-    position:absolute; inset:-6px;
-    border:2.5px solid var(--ink);
-    border-radius:50%;
-  }
+    input:focus-visible {
+      outline: 3px solid var(--yes);
+    }
 
-  .cta{
-    margin-top:26px;
-    width:100%;
-    font-family:'Fredoka', sans-serif;
-    font-weight:600;
-    font-size:16px;
-    padding:14px 18px;
-    background:var(--accent);
-    color:#fff;
-    border:3px solid var(--ink);
-    border-radius:14px;
-    box-shadow:5px 5px 0 var(--ink);
-    cursor:pointer;
-    transition:transform .12s ease, box-shadow .12s ease;
-  }
-  .cta:hover{transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--ink);}
-  .cta:active{transform:translate(1px,1px); box-shadow:3px 3px 0 var(--ink);}
-  @media (prefers-reduced-motion: reduce){
-    .cta{transition:none;}
-    .cta:hover, .cta:active{transform:none;}
-  }
+    /* ---------- stage / game window ---------- */
+    .stage {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 6px;
+    }
 
-  /* ---------- preview stage ---------- */
-  .stage{
-    min-height:520px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-  }
-  @media (max-width: 860px){ .stage{order:1; min-height:auto; padding:8px;} }
+    .window {
+      width: 100%;
+      max-width: 420px;
+      background: var(--cream);
+      border: 4px solid var(--ink);
+      border-radius: 10px;
+      box-shadow: 8px 8px 0 var(--bezel-dark);
+      overflow: hidden;
+    }
 
-  .card{
-    width:100%;
-    max-width:380px;
-    background:var(--card-bg);
-    border:3px solid var(--ink);
-    border-radius:var(--radius-card);
-    padding:34px 28px 26px;
-    box-shadow:10px 10px 0 var(--ink);
-    transform:rotate(-1.2deg);
-    transition:transform .2s ease;
-  }
-  .stage:hover .card{transform:rotate(0deg);}
-  @media (prefers-reduced-motion: reduce){
-    .card{transition:none;}
-    .stage:hover .card{transform:rotate(-1.2deg);}
-  }
+    .titlebar {
+      background: var(--bezel);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 4px solid var(--ink);
+    }
 
-  .card .spark{
-    display:block;
-    margin:0 auto 14px;
-    width:34px; height:34px;
-  }
+    .titlebar .tb-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+    }
 
-  .card h2{
-    text-align:center;
-    font-size:26px;
-    font-weight:700;
-    line-height:1.2;
-    margin:0 0 20px;
-    word-break:break-word;
-  }
+    .titlebar .hearts {
+      font-size: 15px;
+      letter-spacing: 2px;
+    }
 
-  .card .info-box{
-    background:var(--box-bg);
-    border:2.5px solid var(--ink);
-    border-radius:16px;
-    padding:16px 18px;
-    margin-bottom:20px;
-  }
-  .card .info-box .line{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-weight:700;
-    font-size:16px;
-    padding:4px 0;
-  }
-  .card .info-box .line + .line{border-top:1.5px dashed rgba(33,26,43,.25);}
+    .quest-line {
+      text-align: center;
+      font-size: 13px;
+      padding: 10px 10px 0;
+      color: #8a6b7a;
+    }
 
-  .card .footer-msg{
-    text-align:center;
-    font-size:15px;
-    font-weight:500;
-    margin:0 0 20px;
-  }
+    .game-area {
+      position: relative;
+      padding: 14px 16px 18px;
+      min-height: 300px;
+    }
 
-  .card .badge{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    margin:0 auto;
-    padding:8px 16px;
-    background:var(--ink);
-    color:#fff;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:700;
-  }
-  .card .badge-wrap{display:flex; justify-content:center;}
+    .screen {
+      background: var(--screen);
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
 
-  footer.page-foot{
-    text-align:center;
-    margin-top:56px;
-    font-size:13px;
-    color:#6b5f78;
-  }
-</style>
+    .screen svg {
+      width: 110px;
+      height: 110px;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-3px) scale(1.02);
+      }
+    }
+
+    .screen svg {
+      animation: breathe 2.6s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+
+    .float-heart {
+      position: absolute;
+      bottom: 6px;
+      font-size: 13px;
+      opacity: 0;
+      animation: floatUp 3.6s ease-in infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.7);
+        opacity: 0;
+      }
+
+      15% {
+        opacity: .9;
+      }
+
+      85% {
+        opacity: .5;
+      }
+
+      100% {
+        transform: translateY(-120px) scale(1);
+        opacity: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen svg {
+        animation: none;
+      }
+
+      .float-heart {
+        animation: none;
+        display: none;
+      }
+    }
+
+    .log {
+      background: #fff;
+      border: 2.5px solid var(--ink);
+      border-radius: 8px;
+      padding: 14px 14px 12px;
+      margin-bottom: 18px;
+    }
+
+    .log .tag {
+      display: inline-block;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      background: var(--ink);
+      color: #fff;
+      padding: 4px 7px;
+      border-radius: 4px;
+      margin-bottom: 9px;
+    }
+
+    .log .q {
+      font-size: 21px;
+      line-height: 1.35;
+      color: var(--bezel-dark);
+      margin: 0 0 6px;
+      font-weight: 700;
+    }
+
+    .log .sub {
+      font-size: 16px;
+      color: #8a6b7a;
+      margin: 0;
+    }
+
+    .move-label {
+      text-align: center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: #8a6b7a;
+      margin-bottom: 10px;
+    }
+
+    .btn-zone {
+      position: relative;
+      height: 74px;
+    }
+
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      border: 2.5px solid var(--ink);
+      border-radius: 10px;
+      padding: 14px 22px;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+    }
+
+    .yes-btn {
+      left: 16px;
+      background: var(--yes);
+      color: #fff;
+      box-shadow: 4px 4px 0 var(--yes-dark);
+      transition: transform .15s ease, left .15s ease;
+    }
+
+    .yes-btn:hover {
+      transform: translate(-1px, -1px);
+    }
+
+    .no-btn {
+      left: 200px;
+      background: var(--no);
+      color: var(--ink);
+      box-shadow: 4px 4px 0 var(--no-dark);
+      transition: top .18s ease, left .18s ease;
+      white-space: nowrap;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .yes-btn,
+      .no-btn {
+        transition: none;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .no-btn {
+        left: 150px;
+      }
+    }
+
+    /* ---------- success / plan view ---------- */
+    .success {
+      display: none;
+    }
+
+    .success.show {
+      display: block;
+    }
+
+    .plan-card-wrap {
+      background: #fff;
+      border: 2.5px solid var(--ink);
+      border-radius: 8px;
+      padding: 16px 14px;
+    }
+
+    .plan-hero {
+      background: var(--screen);
+      border: 2.5px solid var(--ink);
+      border-radius: 8px;
+      padding: 16px 14px 14px;
+      margin-bottom: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan-hero svg {
+      width: 64px;
+      height: 64px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .success-headline {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: #fff;
+      margin: 2px 0 0;
+      position: relative;
+      z-index: 2;
+      line-height: 1.3;
+    }
+
+    .plan-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .plan-fields label {
+      display: block;
+      font-size: 14px;
+      color: #8a6b7a;
+      margin-bottom: 4px;
+    }
+
+    .chip-label {
+      display: block;
+      font-size: 14px;
+      color: #8a6b7a;
+      margin-bottom: 6px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .chip {
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      background: #fff;
+      color: var(--ink);
+      border: 2.5px solid var(--ink);
+      border-radius: 999px;
+      padding: 6px 13px;
+      cursor: pointer;
+      transition: transform .1s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+    }
+
+    .chip.active {
+      background: var(--no);
+      box-shadow: 2.5px 2.5px 0 var(--no-dark);
+    }
+
+    .plan-card {
+      background: var(--no);
+      border: 2.5px solid var(--ink);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .plan-card .line {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 5px 0;
+    }
+
+    .plan-card .line+.line {
+      border-top: 1.5px dashed rgba(59, 31, 43, .25);
+    }
+
+    .send-btn {
+      display: block;
+      position: static;
+      width: 100%;
+      margin-top: 14px;
+      background: var(--yes);
+      color: #fff;
+      box-shadow: 4px 4px 0 var(--yes-dark);
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .send-btn:hover {
+      transform: translate(-1px, -1px);
+    }
+
+    .send-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 2px 2px 0 var(--yes-dark);
+    }
+
+    .send-btn.disabled {
+      background: #d8c9d0;
+      color: #8a6b7a;
+      box-shadow: 4px 4px 0 #b7a3ac;
+      cursor: not-allowed;
+    }
+
+    .send-note {
+      text-align: center;
+      font-size: 15px;
+      color: #8a6b7a;
+      margin: 10px 0 0;
+    }
+
+    .copy-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      font-family: 'VT323', monospace;
+      font-size: 15px;
+      background: #fff;
+      color: var(--ink);
+      border: 2px dashed var(--ink);
+      border-radius: 8px;
+      padding: 9px 10px;
+      cursor: pointer;
+    }
+
+    footer.page-foot {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 16px;
+      color: #8a6b7a;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="wrap">
-  <header class="page-head">
-    <h1>Leave them a note they can't ignore</h1>
-    <p>Pick the when, the what, and the vibe. Download it as a card and send it their way — way harder to leave on read than a text.</p>
-  </header>
-
-  <div class="builder">
-    <form class="panel" id="form">
-      <div class="field">
-        <label for="title">Headline</label>
-        <input type="text" id="title" maxlength="40" value="SLAY! SEE U THEN!">
-      </div>
-
-      <div class="field row2">
-        <div>
-          <label for="date">Date</label>
-          <input type="date" id="date">
-        </div>
-        <div>
-          <label for="time">Time</label>
-          <input type="time" id="time" value="15:45">
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="activity">What's happening</label>
-        <input type="text" id="activity" maxlength="40" value="Park Walk">
-      </div>
-
-      <div class="field">
-        <label for="emoji">Vibe icon</label>
-        <select id="emoji">
-          <option value="🌳">🌳 outdoors</option>
-          <option value="🍜">🍜 food</option>
-          <option value="🎬">🎬 movie</option>
-          <option value="☕">☕ coffee</option>
-          <option value="🎉">🎉 party</option>
-          <option value="💐">💐 date</option>
-          <option value="🏖️">🏖️ beach</option>
-          <option value="🎮">🎮 games</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="message">Bottom message
-          <span class="hint">The line under the details box.</span>
-        </label>
-        <textarea id="message" maxlength="60">Don't leave me on read! 😎</textarea>
-      </div>
-
-      <div class="field">
-        <label for="badge">Sign-off badge</label>
-        <input type="text" id="badge" maxlength="24" value="made with love">
-      </div>
-
-      <div class="field">
-        <label>Color mood</label>
-        <div class="swatches" id="swatches">
-          <button type="button" class="swatch active" data-theme="bubblegum" aria-label="Bubblegum theme"></button>
-          <button type="button" class="swatch" data-theme="mint" aria-label="Mint theme"></button>
-          <button type="button" class="swatch" data-theme="lavender" aria-label="Lavender theme"></button>
-          <button type="button" class="swatch" data-theme="peach" aria-label="Peach theme"></button>
-        </div>
-      </div>
-
-      <button type="button" class="cta" id="download">Download card</button>
-    </form>
+  <div class="wrap">
+    <header class="page-head">
+      <h1 class="pixel">ASK THEM OUT WITHOUT THE AWKWARD PART</h1>
+      <p>The No button knows what it did.</p>
+    </header>
 
     <div class="stage">
-      <div class="card" id="card">
-        <svg class="spark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" fill="#211A2B"/>
-        </svg>
-        <h2 id="c-title">SLAY! SEE U THEN!</h2>
-        <div class="info-box">
-          <div class="line"><span>📅</span><span id="c-date">Fri, Jul 10</span></div>
-          <div class="line"><span>⏰</span><span id="c-time">3:45 PM</span></div>
-          <div class="line"><span id="c-emoji">🌳</span><span id="c-activity">Park Walk</span></div>
+      <div class="window" id="window">
+        <div class="titlebar">
+          <span class="tb-left">💌 INVITING TO DATE</span>
+          <span class="hearts">♥♥♥♥♥</span>
         </div>
-        <p class="footer-msg" id="c-message">Don't leave me on read! 😎</p>
-        <div class="badge-wrap">
-          <span class="badge">💌 <span id="c-badge">made with love</span></span>
+        <p class="quest-line" id="quest-line">A tiny quest for pretty girl</p>
+
+        <div class="game-area">
+
+          <!-- ask view -->
+          <div id="ask-view">
+            <div class="screen">
+              <span class="float-heart" style="left:20%; animation-delay:0s;">💗</span>
+              <span class="float-heart" style="left:55%; animation-delay:1.2s;">💕</span>
+              <span class="float-heart" style="left:75%; animation-delay:2.3s;">✨</span>
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <ellipse cx="50" cy="88" rx="22" ry="4" fill="#000" opacity="0.15" />
+                <polygon points="22,38 32,14 40,40" fill="#FFF6EE" stroke="#3B1F2B" stroke-width="3"
+                  stroke-linejoin="round" />
+                <polygon points="78,38 68,14 60,40" fill="#FFF6EE" stroke="#3B1F2B" stroke-width="3"
+                  stroke-linejoin="round" />
+                <polygon points="26,34 32,20 36,36" fill="#FFC2D9" />
+                <polygon points="74,34 68,20 64,36" fill="#FFC2D9" />
+                <circle cx="50" cy="56" r="34" fill="#FFF6EE" stroke="#3B1F2B" stroke-width="3.5" />
+                <path d="M35 54 Q39 50 43 54" stroke="#3B1F2B" stroke-width="3" fill="none" stroke-linecap="round" />
+                <path d="M57 54 Q61 50 65 54" stroke="#3B1F2B" stroke-width="3" fill="none" stroke-linecap="round" />
+                <ellipse cx="34" cy="64" rx="6" ry="4" fill="#FFC2D9" />
+                <ellipse cx="66" cy="64" rx="6" ry="4" fill="#FFC2D9" />
+                <path d="M46 64 Q50 68 54 64" stroke="#3B1F2B" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <circle cx="50" cy="61" r="1.6" fill="#3B1F2B" />
+              </svg>
+            </div>
+
+            <div class="log">
+              <span class="tag">YOU READY</span>
+              <p class="q"><span id="log-name">Pretty girl</span>, <span id="log-q">will you go out with me?</span></p>
+              <p class="sub" id="log-sub">Choose wisely, adventurer.</p>
+            </div>
+
+            <p class="move-label">YOUR MOVE</p>
+
+            <div class="btn-zone" id="btn-zone">
+              <button type="button" class="btn yes-btn" id="yes-btn">YES</button>
+              <button type="button" class="btn no-btn" id="no-btn">No</button>
+            </div>
+          </div>
+
+          <!-- success / plan view -->
+          <div class="success" id="success-panel">
+            <div class="plan-card-wrap">
+              <div class="plan-hero">
+                <span class="float-heart" style="left:12%; animation-delay:0s;">💗</span>
+                <span class="float-heart" style="left:80%; animation-delay:1.4s;">✨</span>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <polygon points="22,38 32,14 40,40" fill="#FFF6EE" stroke="#3B1F2B" stroke-width="3"
+                    stroke-linejoin="round" />
+                  <polygon points="78,38 68,14 60,40" fill="#FFF6EE" stroke="#3B1F2B" stroke-width="3"
+                    stroke-linejoin="round" />
+                  <polygon points="26,34 32,20 36,36" fill="#FFC2D9" />
+                  <polygon points="74,34 68,20 64,36" fill="#FFC2D9" />
+                  <circle cx="50" cy="56" r="34" fill="#FFF6EE" stroke="#3B1F2B" stroke-width="3.5" />
+                  <path d="M34 52 Q39 46 44 52" stroke="#3B1F2B" stroke-width="3" fill="none" stroke-linecap="round" />
+                  <path d="M56 52 Q61 46 66 52" stroke="#3B1F2B" stroke-width="3" fill="none" stroke-linecap="round" />
+                  <ellipse cx="34" cy="64" rx="6" ry="4" fill="#FFC2D9" />
+                  <ellipse cx="66" cy="64" rx="6" ry="4" fill="#FFC2D9" />
+                  <path d="M42 66 Q50 74 58 66" stroke="#3B1F2B" stroke-width="2.5" fill="none"
+                    stroke-linecap="round" />
+                </svg>
+                <p class="success-headline fancy" id="success-headline">yay!! see you soon</p>
+              </div>
+
+              <div class="plan-fields">
+                <div>
+                  <label for="plan-date">Date</label>
+                  <input type="date" id="plan-date">
+                </div>
+                <div>
+                  <label for="plan-time">Time</label>
+                  <input type="time" id="plan-time">
+                </div>
+              </div>
+
+              <label class="chip-label">Place</label>
+              <div class="chips" id="place-chips">
+                <button type="button" class="chip" data-place="Mountain hike 🏔️">🏔️ Mountain hike</button>
+                <button type="button" class="chip" data-place="Coffee shop ☕">☕ Coffee shop</button>
+                <button type="button" class="chip" data-place="Movie night 🎬">🎬 Movie night</button>
+                <button type="button" class="chip" data-place="Game night 🎮">🎮 Game night</button>
+                <button type="button" class="chip" data-place="Dinner date 🍜">🍜 Dinner date</button>
+              </div>
+
+              <div class="plan-card">
+                <div class="line">📅 <span id="plan-card-date">Pick a date</span></div>
+                <div class="line">⏰ <span id="plan-card-time">Pick a time</span></div>
+                <div class="line">📍 <span id="plan-card-location">Pick a place</span></div>
+              </div>
+
+              <button type="button" class="btn send-btn" id="send-btn">SEND 💌</button>
+              <p class="send-note" id="send-note">Pick a date, time and place first, then tap Send.</p>
+              <button type="button" class="copy-btn" id="copy-btn" style="display:none;">📋 Something went wrong? Tap to
+                copy the message instead</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
   </div>
 
-  <footer class="page-foot">Built for the person who never leaves you on read.</footer>
-</div>
+  <footer class="page-foot">Send them the link.</footer>
+  </div>
 
-<script>
-(function(){
-  const $ = (id) => document.getElementById(id);
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
 
-  function formatDate(value){
-    if(!value) return 'Pick a date';
-    const [y,m,d] = value.split('-').map(Number);
-    const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-  }
+      // ---- dodging No button ----
+      const noBtn = $('no-btn');
+      const yesBtn = $('yes-btn');
+      const zone = $('btn-zone');
+      const messages = ['No', 'Are you sure?', 'Really?', 'Think again!', "Don't do this", 'Last chance!', '🥺', 'Nooo wait'];
+      let dodgeCount = 0;
+      let lastMoveTime = 0;
 
-  function formatTime(value){
-    if(!value) return 'Pick a time';
-    let [h,m] = value.split(':').map(Number);
-    const suffix = h >= 12 ? 'PM' : 'AM';
-    h = h % 12; if(h === 0) h = 12;
-    return `${h}:${String(m).padStart(2,'0')} ${suffix}`;
-  }
+      function dodge() {
+        const zoneRect = zone.getBoundingClientRect();
+        const btnW = noBtn.offsetWidth;
+        const btnH = noBtn.offsetHeight;
+        const maxLeft = Math.max(zoneRect.width - btnW - 6, 6);
+        const maxTop = Math.max(zoneRect.height - btnH - 6, 6);
+        const newLeft = Math.random() * maxLeft;
+        const newTop = Math.random() * maxTop;
+        noBtn.style.left = newLeft + 'px';
+        noBtn.style.top = newTop + 'px';
 
-  function sync(){
-    $('c-title').textContent = $('title').value || 'SLAY! SEE U THEN!';
-    $('c-date').textContent = formatDate($('date').value);
-    $('c-time').textContent = formatTime($('time').value);
-    $('c-activity').textContent = $('activity').value || 'Something fun';
-    $('c-emoji').textContent = $('emoji').value;
-    $('c-message').textContent = $('message').value || "Don't leave me on read!";
-    $('c-badge').textContent = $('badge').value || 'made with love';
-  }
+        dodgeCount++;
+        noBtn.textContent = messages[Math.min(dodgeCount, messages.length - 1)];
 
-  ['title','date','time','activity','emoji','message','badge'].forEach(id => {
-    $(id).addEventListener('input', sync);
-    $(id).addEventListener('change', sync);
-  });
+        const scale = Math.min(1 + dodgeCount * 0.06, 1.6);
+        yesBtn.style.transform = `scale(${scale})`;
+        yesBtn.style.zIndex = 2;
 
-  // default date = one week from today
-  const in7 = new Date();
-  in7.setDate(in7.getDate() + 7);
-  $('date').value = in7.toISOString().slice(0,10);
+        lastMoveTime = Date.now();
+      }
 
-  const themes = {
-    bubblegum: { box:'#FFE68A', card:'#FFFDF8', accent:'#FF6FA5' },
-    mint:      { box:'#BFEEDD', card:'#FBFFFD', accent:'#2FAE8F' },
-    lavender:  { box:'#E1D3F7', card:'#FDFBFF', accent:'#8A63D2' },
-    peach:     { box:'#FFD9B3', card:'#FFFCF8', accent:'#FF8A5C' },
-  };
+      noBtn.addEventListener('mouseenter', dodge);
+      noBtn.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        dodge();
+      }, { passive: false });
+      noBtn.addEventListener('click', function (e) {
+        if (Date.now() - lastMoveTime < 200) {
+          e.preventDefault();
+        }
+      });
 
-  document.getElementById('swatches').addEventListener('click', (e) => {
-    const btn = e.target.closest('.swatch');
-    if(!btn) return;
-    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-    btn.classList.add('active');
-    const t = themes[btn.dataset.theme];
-    const root = document.documentElement.style;
-    root.setProperty('--box-bg', t.box);
-    root.setProperty('--card-bg', t.card);
-    root.setProperty('--accent', t.accent);
-  });
+      yesBtn.addEventListener('click', () => {
+        $('ask-view').style.display = 'none';
+        $('success-panel').classList.add('show');
+        const in7 = new Date();
+        in7.setDate(in7.getDate() + 7);
+        $('plan-date').value = in7.toISOString().slice(0, 10);
+        syncPlan();
+      });
 
-  $('download').addEventListener('click', () => {
-    const card = $('card');
-    const btn = $('download');
-    const original = btn.textContent;
-    btn.textContent = 'Preparing…';
-    html2canvas(card, { backgroundColor:null, scale:3 }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'reminder-card.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      btn.textContent = original;
-    }).catch(() => { btn.textContent = original; });
-  });
+      // ---- live plan card ----
+      function formatDate(value) {
+        if (!value) return 'Pick a date';
+        const [y, m, d] = value.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      }
+      function formatTime(value) {
+        if (!value) return 'Pick a time';
+        let [h, m] = value.split(':').map(Number);
+        const suffix = h >= 12 ? 'PM' : 'AM';
+        h = h % 12; if (h === 0) h = 12;
+        return `${h}:${String(m).padStart(2, '0')} ${suffix}`;
+      }
+      let selectedPlace = '';
+      function syncPlan() {
+        $('plan-card-date').textContent = formatDate($('plan-date').value);
+        $('plan-card-time').textContent = formatTime($('plan-time').value);
+        $('plan-card-location').textContent = selectedPlace || 'Pick a place';
+        updateSendState();
+      }
+      ['plan-date', 'plan-time'].forEach(id => {
+        $(id).addEventListener('input', syncPlan);
+        $(id).addEventListener('change', syncPlan);
+      });
 
-  sync();
-})();
-</script>
+      document.getElementById('place-chips').addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        selectedPlace = chip.dataset.place;
+        syncPlan();
+      });
+
+      // ---- send the answer via Formspree ----
+      const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xjyvavpd';
+      const sendBtn = $('send-btn');
+      const sendNote = $('send-note');
+      const copyBtn = $('copy-btn');
+      let lastMessageBody = '';
+
+      function buildMessage() {
+        const dateVal = $('plan-date').value;
+        const timeVal = $('plan-time').value;
+        const dateText = formatDate(dateVal);
+        const timeText = formatTime(timeVal);
+        const placeText = selectedPlace || '';
+        const allSet = dateVal && timeVal && selectedPlace;
+        const body =
+          'Jenna said YES!\n\n' +
+          'Date: ' + dateText + '\n' +
+          'Time: ' + timeText + '\n' +
+          'Place: ' + placeText;
+        return { allSet, dateText, timeText, placeText, body };
+      }
+
+      function updateSendState() {
+        const { allSet, body } = buildMessage();
+        lastMessageBody = body;
+        if (allSet) {
+          sendBtn.classList.remove('disabled');
+          sendBtn.disabled = false;
+          sendNote.textContent = 'Tap Send to let them know! 💌';
+        } else {
+          sendBtn.classList.add('disabled');
+          sendBtn.disabled = true;
+          sendNote.textContent = 'Pick a date, time and place first, then tap Send.';
+        }
+        copyBtn.style.display = 'none';
+      }
+
+      sendBtn.addEventListener('click', async () => {
+        const { allSet, dateText, timeText, placeText, body } = buildMessage();
+        if (!allSet) return;
+
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'SENDING…';
+        sendNote.textContent = '';
+        copyBtn.style.display = 'none';
+
+        try {
+          const res = await fetch(FORMSPREE_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject: 'SHE SAID YES 💌',
+              message: body,
+              date: dateText,
+              time: timeText,
+              place: placeText
+            })
+          });
+
+          if (res.ok) {
+            sendBtn.textContent = 'SENT ✔️';
+            sendNote.textContent = "It's on its way to their inbox! 💌";
+          } else {
+            throw new Error('Request failed');
+          }
+        } catch (err) {
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'SEND 💌';
+          sendNote.textContent = "Couldn't send automatically — use the button below instead:";
+          copyBtn.style.display = 'block';
+        }
+      });
+
+      copyBtn.addEventListener('click', () => {
+        const text = lastMessageBody;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            copyBtn.textContent = '✅ Copied! Paste it into a message.';
+          }).catch(() => {
+            copyBtn.textContent = '⚠️ Could not copy — long-press to select the text manually.';
+          });
+        } else {
+          copyBtn.textContent = '⚠️ Copy not supported here — long-press to select the text manually.';
+        }
+      });
+
+      updateSendState();
+    })();
+  </script>
 
 </body>
+
 </html>
